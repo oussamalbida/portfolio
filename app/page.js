@@ -1,10 +1,12 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useTheme } from './context/ThemeContext';
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { useRef } from 'react';
+import { smoothScrollTo } from './utils/smoothScroll';
+import { sendEmail } from './utils/emailService';
 
 function ImageCard() {
   const ref = useRef(null);
@@ -205,7 +207,7 @@ const SkillBar = ({ skill, percentage, description }) => {
 
       {/* More Skills Button */}
       <motion.button
-        className="skill-button w-full py-3 px-4 rounded-xl font-semibold"
+        className="btn-primary inline-block text-center"
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         onClick={() => setShowDetails(!showDetails)}
@@ -289,17 +291,103 @@ const ServiceCard = ({ number, icon, title, description }) => {
 };
 
 const navLinks = [
-  { name: 'Home', href: '/' },
-  { name: 'About', href: '/#about' },
-  { name: 'Experience', href: '/#experience' },
-  { name: 'Services', href: '/#services' },
-  { name: 'Portfolio', href: '/#portfolio' },
-  { name: 'Contact', href: '/#contact' },
+  { name: 'Home', href: '#home', id: 'home' },
+  { name: 'About', href: '#about', id: 'about' },
+  { name: 'Experience', href: '#experience', id: 'experience' },
+  { name: 'Services', href: '#services', id: 'services' },
+  { name: 'Portfolio', href: '#portfolio', id: 'portfolio' },
+  { name: 'Contact', href: '#contact', id: 'contact' },
+];
+
+const testimonials = [
+  {
+    name: "Sarah Johnson",
+    position: "Product Manager",
+    text: "Working with Oussama was an exceptional experience. His attention to detail and innovative solutions helped bring our vision to life. The end result exceeded our expectations.",
+    image: "/client1.jpg"
+  },
+  {
+    name: "Michael Chen",
+    position: "Tech Lead",
+    text: "Oussama's technical expertise and problem-solving skills are outstanding. He delivered our project on time and with excellent quality. A true professional who goes above and beyond.",
+    image: "/client2.jpg"
+  },
+  {
+    name: "Emma Davis",
+    position: "Startup Founder",
+    text: "I'm impressed by Oussama's ability to transform complex requirements into elegant solutions. His work has significantly improved our user experience and business metrics.",
+    image: "/client3.jpg"
+  }
 ];
 
 export default function Home() {
   const { isDarkMode } = useTheme();
-  
+  const [activeSection, setActiveSection] = useState('home');
+  const [formStatus, setFormStatus] = useState({ message: '', type: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = navLinks.map(link => document.getElementById(link.id));
+      const scrollPosition = window.scrollY + 200; // Adjust this value based on when you want the section to be considered "active"
+
+      sections.forEach((section, index) => {
+        if (!section) return;
+        
+        const sectionTop = section.offsetTop;
+        const sectionBottom = sectionTop + section.offsetHeight;
+
+        if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+          setActiveSection(navLinks[index].id);
+        }
+      });
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleNavClick = (e, id) => {
+    e.preventDefault();
+    smoothScrollTo(id);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setFormStatus({ message: '', type: '' });
+
+    try {
+      const result = await sendEmail(formData);
+      if (result.success) {
+        setFormStatus({ message: result.message, type: 'success' });
+        setFormData({ name: '', email: '', message: '' }); // Clear form
+      } else {
+        setFormStatus({ message: result.message, type: 'error' });
+      }
+    } catch (error) {
+      setFormStatus({ 
+        message: 'An error occurred. Please try again later.', 
+        type: 'error' 
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <AnimatePresence>
       <main className="min-h-screen transition-colors duration-300 flex-1">
@@ -328,58 +416,47 @@ export default function Home() {
               }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              className="text-2xl font-bold"
             >
-              <Link href="/" className="logo text-[28px] font-medium tracking-wide" style={{ color: 'var(--primary-color)' }}>
-                Alexandera
+              <Link 
+                href="#home"
+                onClick={(e) => handleNavClick(e, 'home')}
+                className="text-[var(--primary-color)]"
+              >
+                Oussama
               </Link>
             </motion.div>
+
             <motion.div 
-              variants={staggerContainer}
-              initial="hidden"
-              animate="show"
-              className="flex gap-12 text-[16px] font-light"
+              className="hidden md:flex items-center space-x-8"
+              initial={{ x: 50, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ delay: 0.4 }}
             >
-              {navLinks.map((item, index) => (
-                <motion.div
-                  key={item.name}
-                  variants={navAnimation}
-                  whileHover={{ y: -3, scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={(e) => handleNavClick(e, link.id)}
+                  className={`relative text-base font-medium transition-colors duration-300 hover:text-[var(--primary-color)] ${
+                    activeSection === link.id ? 'text-[var(--primary-color)]' : ''
+                  }`}
                 >
-                  {item.name === 'Experience' ? (
-                    <Link href="#experience" className="nav-item">
-                      Experience
-                      <div className="dropdown-menu">
-                        <Link href="#journey" className="dropdown-item">
-                          <i className="fas fa-road"></i>
-                          My Journey
-                        </Link>
-                        <Link href="#talent" className="dropdown-item">
-                          <i className="fas fa-star"></i>
-                          My Talent
-                        </Link>
-                      </div>
-                    </Link>
-                  ) : (
-                    <Link 
-                      href={item.href} 
-                      className={`nav-link ${item.name === 'Home' ? 'active' : ''}`}
-                      style={{ 
-                        borderColor: item.name === 'Home' ? 'var(--primary-color)' : 'transparent',
-                        color: item.name === 'Home' ? 'var(--primary-color)' : 'var(--text-secondary)'
-                      }}
-                    >
-                      {item.name}
-                    </Link>
+                  {link.name}
+                  {activeSection === link.id && (
+                    <motion.div
+                      className="absolute -bottom-1 left-0 w-full h-0.5 bg-[var(--primary-color)]"
+                      layoutId="underline"
+                    />
                   )}
-                </motion.div>
+                </Link>
               ))}
             </motion.div>
           </div>
         </motion.nav>
 
         {/* Hero Section */}
-        <section className="min-h-screen flex items-center px-[30px]">
+        <section className="min-h-screen flex items-center px-[30px]" id="home">
           <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             <motion.div 
               variants={staggerContainer}
@@ -400,40 +477,62 @@ export default function Home() {
                 className="text-5xl font-bold"
                 style={{ color: 'var(--text-primary)' }}
               >
-                I&apos;m <span style={{ color: 'var(--primary-color)' }}>Your Name</span>
+                I&apos;m <span style={{ color: 'var(--primary-color)' }}>Oussama Lbida</span>
               </motion.h1>
               <motion.h2 
                 variants={fadeIn('right', 0)}
                 className="text-3xl"
                 style={{ color: 'var(--text-secondary)' }}
               >
-                a UI/UX Designer
+                a Full Stack Developer
               </motion.h2>
               <motion.p 
                 variants={fadeIn('right', 0)}
                 className="max-w-lg"
                 style={{ color: 'var(--text-secondary)' }}
               >
-                Passionate about creating beautiful and functional user experiences. I specialize in turning complex problems into simple, intuitive designs.
+              Full-Stack Web Developer with expertise in building modern, responsive websites and dynamic applications. I create seamless user experiences with innovative and efficient solutions to bring your ideas to life.
               </motion.p>
               <motion.div 
                 variants={fadeIn('up', 0)}
                 className="space-x-4"
               >
-                <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="btn-primary px-6 py-3 rounded-md"
-                >
-                  Hire Me
-                </motion.button>
-                <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="btn-secondary px-6 py-3 rounded-md"
+                <motion.a
+                  href="#portfolio"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="btn-primary inline-block text-center"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const section = document.querySelector('#portfolio');
+                    if (section) {
+                      section.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
                 >
                   Portfolio
-                </motion.button>
+                </motion.a>
+                <motion.a
+                  href="#contact"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="btn-secondary inline-block text-center"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const section = document.querySelector('#contact');
+                    if (section) {
+                      section.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                >
+                  Hire Me
+                </motion.a>
               </motion.div>
             </motion.div>
             <motion.div 
@@ -462,7 +561,7 @@ export default function Home() {
         </section>
 
         {/* About Section */}
-        <section className="min-h-screen py-20 px-[30px] bg-[#0a0a0a]">
+        <section className="min-h-screen py-20 px-[30px] bg-[#0a0a0a]" id="about">
           <div className="max-w-[1100px] mx-auto">
             <motion.div 
               className="grid grid-cols-1 lg:grid-cols-2 gap-10"
@@ -542,7 +641,7 @@ export default function Home() {
                     }}
                     className="text-white text-4xl font-bold mb-6"
                   >
-                    I'm Alexander Smith, a visual UI/UX Designer and Web Developer
+                       I'm Oussama Lbida, a Full-Stack Web Developer and Motion Designer
                   </motion.h1>
                   <motion.p 
                     variants={{
@@ -558,8 +657,7 @@ export default function Home() {
                     }}
                     className="text-gray-400 mb-8"
                   >
-                    Lorem ipsum viverra feugiat. Pellen tesque libero ut justo, ultrices in ligula. Semper at tempufddfel. Lorem ipsum dolor sit amet consectetur adipisicing elit. Non quae, fugiat consequatur voluptatem nihil ad. Lorem ipsum dolor sit amet.
-                  </motion.p>
+                  Passionate about crafting responsive websites, dynamic applications, and stunning visual content. I bring creativity and innovation to every project I work on.                  </motion.p>
 
                   <motion.div 
                     className="grid grid-cols-2 gap-6 mb-8"
@@ -577,19 +675,19 @@ export default function Home() {
                   >
                     <div>
                       <p className="text-white font-bold mb-1">Name:</p>
-                      <p className="text-gray-400">Alexander Smith</p>
+                      <p className="text-gray-400">Oussama Lbida</p>
                     </div>
                     <div>
                       <p className="text-white font-bold mb-1">Email:</p>
-                      <p className="text-gray-400">alexander@mail.com</p>
+                      <p className="text-gray-400">lbidaooussama@mail.com</p>
                     </div>
                     <div>
                       <p className="text-white font-bold mb-1">From:</p>
-                      <p className="text-gray-400">London, UK</p>
+                      <p className="text-gray-400">Beni Mellal, Morocco</p>
                     </div>
                     <div>
                       <p className="text-white font-bold mb-1">Age:</p>
-                      <p className="text-gray-400">24 Years</p>
+                      <p className="text-gray-400">20 Years</p>
                     </div>
                   </motion.div>
                 </div>
@@ -608,22 +706,25 @@ export default function Home() {
                     }
                   }}
                 >
-                  <button className="bg-[var(--primary-color)] text-white px-8 py-3 rounded-lg hover:opacity-90 transition-all duration-300">
+                  <motion.a
+                    href="/oussama Lbida CV (1).pdf"
+                    download
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="btn-primary inline-block text-center"
+                  >
                     Download CV
-                  </button>
+                  </motion.a>
                   <div className="flex items-center gap-6">
                     <div className="w-12 h-[2px] bg-[var(--primary-color)]"></div>
                     <div className="flex gap-4">
-                      <a href="#twitter" className="text-gray-400 hover:text-[var(--primary-color)] transition-colors">
-                        <i className="fab fa-twitter text-xl"></i>
+                      <a href="https://github.com/oussamalbida" className="text-gray-400 hover:text-[var(--primary-color)] transition-colors">
+                        <i className="fab fa-github text-xl"></i>
                       </a>
-                      <a href="#instagram" className="text-gray-400 hover:text-[var(--primary-color)] transition-colors">
+                      <a href="https://www.instagram.com/digital_services_agencyy?igsh=MXFpb3NoeDhjNm9kcQ==" className="text-gray-400 hover:text-[var(--primary-color)] transition-colors">
                         <i className="fab fa-instagram text-xl"></i>
                       </a>
-                      <a href="#facebook" className="text-gray-400 hover:text-[var(--primary-color)] transition-colors">
-                        <i className="fab fa-facebook-f text-xl"></i>
-                      </a>
-                      <a href="#linkedin" className="text-gray-400 hover:text-[var(--primary-color)] transition-colors">
+                      <a href="https://www.linkedin.com/in/lbida-oussama-803533336?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" className="text-gray-400 hover:text-[var(--primary-color)] transition-colors">
                         <i className="fab fa-linkedin-in text-xl"></i>
                       </a>
                     </div>
@@ -635,7 +736,7 @@ export default function Home() {
         </section>
 
         {/* Experience Section */}
-        <section className="min-h-screen py-20 px-[30px] bg-[var(--bg-color)]">
+        <section className="min-h-screen py-20 px-[30px] bg-[var(--bg-color)]" id="experience">
           <motion.div 
             className="max-w-[1100px] mx-auto"
             initial={{ opacity: 0 }}
@@ -1064,7 +1165,7 @@ export default function Home() {
         </section>
 
         {/* Professional Skills Section */}
-        <section className="min-h-screen py-20 px-[30px] bg-[var(--bg-color)]">
+        <section className="min-h-screen py-20 px-[30px] bg-[var(--bg-color)]" id="services">
           <motion.div 
             className="max-w-[1100px] mx-auto"
             initial={{ opacity: 0 }}
@@ -1125,7 +1226,9 @@ export default function Home() {
 
             {/* Skills Grid */}
             <motion.div 
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+              className={`max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 ${
+                isDarkMode ? '' : 'services-light-mode'
+              }`}
               variants={{
                 hidden: { opacity: 0 },
                 visible: {
@@ -1185,7 +1288,7 @@ export default function Home() {
         </section>
 
         {/* Services Section */}
-        <section className="min-h-screen py-20 px-[30px] bg-[var(--bg-color)]">
+        <section className="min-h-screen py-20 px-[30px] bg-[var(--bg-color)]" id="portfolio">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -1205,9 +1308,10 @@ export default function Home() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="bg-[#0B1121] p-8 rounded-2xl border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-colors"
+                className={`bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
+                  isDarkMode ? '' : 'services-light-mode'
+                }`}
               >
                 <div className="text-[var(--primary-color)] text-3xl mb-4">
                   <i className="fas fa-palette"></i>
@@ -1222,9 +1326,10 @@ export default function Home() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="bg-[#0B1121] p-8 rounded-2xl border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-colors"
+                className={`bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
+                  isDarkMode ? '' : 'services-light-mode'
+                }`}
               >
                 <div className="text-[var(--primary-color)] text-3xl mb-4">
                   <i className="fas fa-code"></i>
@@ -1239,9 +1344,10 @@ export default function Home() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.4 }}
-                className="bg-[#0B1121] p-8 rounded-2xl border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-colors"
+                className={`bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
+                  isDarkMode ? '' : 'services-light-mode'
+                }`}
               >
                 <div className="text-[var(--primary-color)] text-3xl mb-4">
                   <i className="fas fa-server"></i>
@@ -1256,16 +1362,17 @@ export default function Home() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.5 }}
-                className="bg-[#0B1121] p-8 rounded-2xl border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-colors"
+                className={`bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
+                  isDarkMode ? '' : 'services-light-mode'
+                }`}
               >
                 <div className="text-[var(--primary-color)] text-3xl mb-4">
                   <i className="fas fa-database"></i>
                 </div>
                 <h3 className="text-white text-xl font-semibold mb-4">Database Management</h3>
                 <p className="text-[#94A3B8]">
-                  Designing and managing both SQL and NoSQL databases, optimizing performance and ensuring data integrity.
+                  Designing and managing both SQL (MySQL) and NoSQL (MongoDB) database design and optimization.
                 </p>
               </motion.div>
 
@@ -1273,9 +1380,10 @@ export default function Home() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.6 }}
-                className="bg-[#0B1121] p-8 rounded-2xl border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-colors"
+                className={`bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
+                  isDarkMode ? '' : 'services-light-mode'
+                }`}
               >
                 <div className="text-[var(--primary-color)] text-3xl mb-4">
                   <i className="fas fa-users"></i>
@@ -1290,9 +1398,10 @@ export default function Home() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: 0.7 }}
-                className="bg-[#0B1121] p-8 rounded-2xl border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-colors"
+                className={`bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
+                  isDarkMode ? '' : 'services-light-mode'
+                }`}
               >
                 <div className="text-[var(--primary-color)] text-3xl mb-4">
                   <i className="fas fa-comments"></i>
@@ -1499,252 +1608,351 @@ export default function Home() {
 
         {/* Testimonials Section */}
         <motion.section
-          id="testimonials"
-          className="py-20 max-w-[1200px] ml-[170px]"
-          initial="hidden"
-          whileInView="visible"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="py-20 px-[30px] bg-[#0B1120]"
         >
-          <div className="container mx-auto px-4">
-            {/* Section Header */}
-            <div className="text-center mb-12">
-              <motion.h3 
-                className="text-[var(--primary-color)] text-xl font-semibold mb-4"
-                variants={{
-                  hidden: { opacity: 0, y: 10 },
-                  visible: { opacity: 1, y: 0 }
-                }}
-              >
-                TESTIMONIALS
-              </motion.h3>
-              <motion.h2 
-                className="text-[var(--text-color)] text-4xl font-bold"
-                variants={{
-                  hidden: { opacity: 0, scale: 0.8 },
-                  visible: { opacity: 1, scale: 1 }
-                }}
-              >
-                What My Clients Say
-              </motion.h2>
-            </div>
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="max-w-[1100px] mx-auto text-center mb-12"
+          >
+            <motion.h3 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="text-[var(--primary-color)] text-xl font-semibold mb-4"
+            >
+              TESTIMONIALS
+            </motion.h3>
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="text-4xl font-bold text-white"
+            >
+              What Clients Say
+            </motion.h2>
+          </motion.div>
 
-            {/* Testimonials Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {/* Testimonial 1 */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className={`max-w-[1100px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ${
+              isDarkMode ? '' : 'testimonials-light-mode'
+            }`}
+          >
+            {testimonials.map((testimonial, index) => (
               <motion.div
-                className="testimonial-card relative"
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  visible: { opacity: 1, y: 0 }
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 * index }}
+                whileHover={{ 
+                  scale: 1.03,
+                  boxShadow: isDarkMode 
+                    ? "0 10px 30px rgba(0,0,0,0.3)" 
+                    : "0 10px 30px rgba(0,0,0,0.1)"
                 }}
+                className={`p-6 rounded-xl relative ${
+                  isDarkMode ? '' : 'testimonials-light-mode'
+                }`}
               >
-                <div className="testimonial-quote">
-                  <i className="fas fa-quote-left"></i>
-                </div>
-                <div className="testimonial-content">
-                  <p className="testimonial-text">
-                    "Working with this developer was an exceptional experience. Their attention to detail and innovative solutions helped bring our vision to life. The end result exceeded our expectations."
-                  </p>
-                  <div className="testimonial-author">
-                    <div className="testimonial-avatar">
-                      <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="John Wilson" />
-                    </div>
-                    <div className="testimonial-info">
-                      <h4>John Wilson</h4>
-                      <p>Seattle, Washington</p>
-                    </div>
+                <motion.div
+                  initial={{ scale: 0 }}
+                  whileInView={{ scale: 1 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 260,
+                    damping: 20,
+                    delay: 0.3 * index 
+                  }}
+                  className="absolute -top-5 left-6"
+                >
+                  <i className="fas fa-quote-left text-4xl text-[var(--primary-color)]"></i>
+                </motion.div>
+                <motion.p 
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.4 * index }}
+                  className="text-gray-300 mt-6 mb-4"
+                >
+                  {testimonial.text}
+                </motion.p>
+                <motion.div 
+                  initial={{ x: -20, opacity: 0 }}
+                  whileInView={{ x: 0, opacity: 1 }}
+                  transition={{ duration: 0.5, delay: 0.5 * index }}
+                  className="flex items-center gap-4"
+                >
+                  <img
+                    src={testimonial.image}
+                    alt={testimonial.name}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                  <div>
+                    <h4 className="text-white font-semibold">{testimonial.name}</h4>
+                    <p className="text-gray-400 text-sm">{testimonial.position}</p>
                   </div>
-                </div>
+                </motion.div>
               </motion.div>
-
-              {/* Testimonial 2 */}
-              <motion.div
-                className="testimonial-card relative"
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  visible: { opacity: 1, y: 0 }
-                }}
-              >
-                <div className="testimonial-quote">
-                  <i className="fas fa-quote-left"></i>
-                </div>
-                <div className="testimonial-content">
-                  <p className="testimonial-text">
-                    "The level of professionalism and technical expertise demonstrated throughout our project was impressive. They delivered a high-quality solution on time and within budget."
-                  </p>
-                  <div className="testimonial-author">
-                    <div className="testimonial-avatar">
-                      <img src="https://randomuser.me/api/portraits/men/85.jpg" alt="Wilson John" />
-                    </div>
-                    <div className="testimonial-info">
-                      <h4>Wilson John</h4>
-                      <p>Seattle, Washington</p>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          </div>
+            ))}
+          </motion.div>
         </motion.section>
 
         {/* Contact Section */}
-        <motion.section
-          id="contact"
-          className="py-20 max-w-[1200px] ml-[170px]"
-          initial="hidden"
-          whileInView="visible"
+        <motion.section 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          id="contact" 
+          className="py-20 px-[30px] bg-[#0B1120]"
         >
-          <div className="container mx-auto px-4">
-            {/* Section Header */}
-            <div className="text-center mb-12">
+          <div className="max-w-[1100px] mx-auto">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="text-center mb-12"
+            >
               <motion.h3 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
                 className="text-[var(--primary-color)] text-xl font-semibold mb-4"
-                variants={{
-                  hidden: { opacity: 0, y: 10 },
-                  visible: { opacity: 1, y: 0 }
-                }}
               >
                 GET IN TOUCH
               </motion.h3>
               <motion.h2 
-                className="text-[var(--text-color)] text-4xl font-bold"
-                variants={{
-                  hidden: { opacity: 0, scale: 0.8 },
-                  visible: { opacity: 1, scale: 1 }
-                }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="text-white text-4xl font-bold"
               >
                 Contact Me
               </motion.h2>
-            </div>
+            </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              {/* Contact Information */}
+              {/* Contact Info */}
               <motion.div
-                variants={{
-                  hidden: { opacity: 0, x: -20 },
-                  visible: { opacity: 1, x: 0 }
-                }}
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className={`space-y-8 ${
+                  isDarkMode ? '' : 'contact-info-light-mode'
+                }`}
               >
-                {/* Call Us */}
-                <div className="contact-info-item">
-                  <div className="contact-info-icon">
-                    <i className="fas fa-phone-alt"></i>
+                <motion.div 
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                  whileHover={{ x: 10 }}
+                  className={`flex items-center space-x-4 p-4 rounded-lg ${
+                    isDarkMode 
+                      ? '' 
+                      : 'shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-lg'
+                  }`}
+                >
+                  <div className="text-[var(--primary-color)]">
+                    <i className="fas fa-phone text-2xl"></i>
                   </div>
-                  <div className="contact-info-text">
-                    <h4>Call Us</h4>
-                    <p>+123-45-67-89</p>
+                  <div>
+                    <h4 className="text-lg font-semibold text-white">Call Us</h4>
+                    <p className="text-gray-400">+212 659417658</p>
                   </div>
-                </div>
+                </motion.div>
 
-                {/* Email Us */}
-                <div className="contact-info-item">
-                  <div className="contact-info-icon">
-                    <i className="fas fa-envelope"></i>
+                <motion.div 
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                  whileHover={{ x: 10 }}
+                  className={`flex items-center space-x-4 p-4 rounded-lg ${
+                    isDarkMode 
+                      ? '' 
+                      : 'shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-lg'
+                  }`}
+                >
+                  <div className="text-[var(--primary-color)]">
+                    <i className="fas fa-envelope text-2xl"></i>
                   </div>
-                  <div className="contact-info-text">
-                    <h4>Email Us</h4>
-                    <p>example@mail.com</p>
+                  <div>
+                    <h4 className="text-lg font-semibold text-white">Email Us</h4>
+                    <p className="text-gray-400">oussamallbida@gmail.com</p>
                   </div>
-                </div>
+                </motion.div>
 
-                {/* Address */}
-                <div className="contact-info-item">
-                  <div className="contact-info-icon">
-                    <i className="fas fa-map-marker-alt"></i>
+                <motion.div 
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.5 }}
+                  whileHover={{ x: 10 }}
+                  className={`flex items-center space-x-4 p-4 rounded-lg ${
+                    isDarkMode 
+                      ? '' 
+                      : 'shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] hover:shadow-lg'
+                  }`}
+                >
+                  <div className="text-[var(--primary-color)]">
+                    <i className="fas fa-map-marker-alt text-2xl"></i>
                   </div>
-                  <div className="contact-info-text">
-                    <h4>Address</h4>
-                    <p>Address here, 208 Trainer Avenue street, Illinois, UK - 62617.</p>
+                  <div>
+                    <h4 className="text-lg font-semibold text-white">Address</h4>
+                    <p className="text-gray-400">Beni Mellal, Morocco</p>
                   </div>
-                </div>
+                </motion.div>
               </motion.div>
 
               {/* Contact Form */}
               <motion.div
-                className="contact-form"
-                variants={{
-                  hidden: { opacity: 0, x: 20 },
-                  visible: { opacity: 1, x: 0 }
-                }}
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
               >
-                <form className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <input 
-                      type="text" 
-                      placeholder="Name" 
-                      className="w-full"
-                    />
-                    <input 
-                      type="email" 
-                      placeholder="Email" 
-                      className="w-full"
-                    />
-                  </div>
-                  <input 
-                    type="text" 
-                    placeholder="Subject" 
-                    className="w-full"
-                  />
-                  <textarea 
-                    placeholder="Message"
-                    className="w-full"
-                  ></textarea>
-                  <button
-                    type="submit"
-                    className="px-8 py-3 bg-[var(--primary-color)] text-white rounded-lg hover:bg-[var(--primary-hover)] transition-colors w-full md:w-auto"
+                <motion.form 
+                  onSubmit={handleSubmit} 
+                  className="space-y-6"
+                >
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.5 }}
+                    className="grid grid-cols-1 md:grid-cols-2 gap-6"
                   >
-                    Send Message
-                  </button>
-                </form>
+                    <motion.input
+                      whileFocus={{ scale: 1.02 }}
+                      type="text" 
+                      name="name" 
+                      value={formData.name} 
+                      onChange={handleInputChange} 
+                      placeholder="Name" 
+                      required
+                      className="w-full px-4 py-3 rounded-lg bg-[#1A2333] border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:border-[var(--primary-color)] transition-colors"
+                    />
+                    <motion.input
+                      whileFocus={{ scale: 1.02 }}
+                      type="email" 
+                      name="email" 
+                      value={formData.email} 
+                      onChange={handleInputChange} 
+                      placeholder="Email" 
+                      required
+                      className="w-full px-4 py-3 rounded-lg bg-[#1A2333] border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:border-[var(--primary-color)] transition-colors"
+                    />
+                  </motion.div>
+                  <motion.input
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.6 }}
+                    whileFocus={{ scale: 1.02 }}
+                    type="text" 
+                    name="subject" 
+                    placeholder="Subject" 
+                    className="w-full px-4 py-3 rounded-lg bg-[#1A2333] border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:border-[var(--primary-color)] transition-colors"
+                  />
+                  <motion.textarea
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.7 }}
+                    whileFocus={{ scale: 1.02 }}
+                    name="message" 
+                    value={formData.message} 
+                    onChange={handleInputChange} 
+                    placeholder="Message" 
+                    required
+                    rows="5"
+                    className="w-full px-4 py-3 rounded-lg bg-[#1A2333] border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:border-[var(--primary-color)] transition-colors resize-none"
+                  ></motion.textarea>
+
+                  {formStatus.message && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={`p-4 rounded-lg ${
+                        formStatus.type === 'success' 
+                          ? 'bg-green-900 text-green-200' 
+                          : 'bg-red-900 text-red-200'
+                      }`}
+                    >
+                      {formStatus.message}
+                    </motion.div>
+                  )}
+
+                  <motion.button
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.8 }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    type="submit"
+                    disabled={isSubmitting}
+                    className={`btn-primary ${isSubmitting ? 'btn-loading opacity-70 cursor-not-allowed' : ''}`}
+                  >
+                    {isSubmitting ? (
+                      <span className="flex items-center justify-center">
+                        <i className="fas fa-spinner fa-spin mr-2"></i>
+                        Sending...
+                      </span>
+                    ) : (
+                      'Send Message'
+                    )}
+                  </motion.button>
+                </motion.form>
               </motion.div>
             </div>
           </div>
         </motion.section>
+
+        {/* Footer */}
+        <footer className="footer">
+          <div className="footer-content max-w-[1200px] ml-[170px]">
+            <div className="footer-copyright">
+              {new Date().getFullYear()} oussama lbida. All rights reserved
+            </div>
+            <div className="social-links">
+              <a 
+                href="https://github.com/oussamalbida" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="social-link github"
+              >
+                <i className="fab fa-github"></i>
+              </a>
+              <a 
+                href="https://www.instagram.com/digital_services_agencyy?igsh=MXFpb3NoeDhjNm9kcQ==" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="social-link instagram"
+              >
+                <i className="fab fa-instagram"></i>
+              </a>
+              <a 
+                href="https://www.linkedin.com/in/lbida-oussama-803533336?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="social-link linkedin"
+              >
+                <i className="fab fa-linkedin-in"></i>
+              </a>
+            </div>
+          </div>
+        </footer>
       </main>
 
-      {/* Footer */}
-      <footer className="footer">
-        <div className="footer-content max-w-[1200px] ml-[170px]">
-          <div className="footer-copyright">
-            {new Date().getFullYear()} Alexandera. All Rights Reserved
-          </div>
-          <div className="social-links">
-            <a 
-              href="https://twitter.com" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="social-link twitter"
-            >
-              <i className="fab fa-twitter"></i>
-            </a>
-            <a 
-              href="https://instagram.com" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="social-link instagram"
-            >
-              <i className="fab fa-instagram"></i>
-            </a>
-            <a 
-              href="https://facebook.com" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="social-link facebook"
-            >
-              <i className="fab fa-facebook-f"></i>
-            </a>
-            <a 
-              href="https://linkedin.com" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="social-link linkedin"
-            >
-              <i className="fab fa-linkedin-in"></i>
-            </a>
-          </div>
-        </div>
-      </footer>
+      {/* Background Shapes */}
+      <div className="bg-shapes">
+        <div className="shape-1"></div>
+        <div className="shape-2"></div>
+        <div className="shape-3"></div>
+        <div className="shape-4"></div>
+        <div className="shape-5"></div>
+      </div>
     </AnimatePresence>
   );
 }

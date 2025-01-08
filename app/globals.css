@@ -69,6 +69,10 @@
   --skill-button-hover: #FF7F50;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background-color: var(--bg-color);
   color: var(--text-color);
@@ -332,45 +336,81 @@ body {
   width: 100%;
 }
 
-.btn-primary {
+.bg-primary {
   background-color: var(--primary-color);
+}
+
+.bg-gradient-to-r {
+  background-image: linear-gradient(to right, var(--primary-color), var(--primary-color));
+}
+
+/* Button Styles */
+.btn-primary {
+  @apply px-8 py-3 rounded-lg font-medium relative overflow-hidden transition-all duration-300;
+  background: var(--primary-color);
   color: white;
-  border: 2px solid var(--primary-color);
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .btn-primary:hover {
-  opacity: 0.9;
+  background: var(--primary-hover);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.3);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
 }
 
 .btn-secondary {
-  background-color: transparent;
+  @apply px-8 py-3 rounded-lg font-medium relative overflow-hidden transition-all duration-300;
+  background: transparent;
   color: var(--primary-color);
   border: 2px solid var(--primary-color);
-  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .btn-secondary:hover {
-  background-color: var(--hover-bg);
+  background: var(--primary-color);
+  color: white;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.15);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
-.logo {
-  background: linear-gradient(to right, #FF6347, #FF6347);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  transition: opacity 0.3s ease;
+.btn-secondary:active {
+  transform: translateY(0);
 }
 
-.logo:hover {
-  opacity: 0.8;
+/* Button loading animation */
+.btn-loading {
+  position: relative;
 }
 
-/* Skill button styles */
+.btn-loading:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 200%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  animation: btn-loading 1.5s infinite;
+}
+
+@keyframes btn-loading {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
 .skill-button {
   background-color: var(--primary-color);
   color: white;
