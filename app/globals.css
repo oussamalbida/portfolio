@@ -869,3 +869,139 @@ body {
   border-top: 1px solid #1E2D3D;
   transform: rotate(45deg);
 }
+
+/* Loading Animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.95);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.loading-rotate {
+  animation: rotate 1s linear infinite;
+}
+
+.loading-slide-up {
+  animation: slide-up 0.5s ease-out forwards;
+}
+
+/* Color Animation */
+@keyframes colorChange {
+  0% {
+    color: var(--primary-color);
+  }
+  25% {
+    color: #4CAF50; /* Green */
+  }
+  50% {
+    color: #2196F3; /* Blue */
+  }
+  75% {
+    color: #9C27B0; /* Purple */
+  }
+  100% {
+    color: var(--primary-color);
+  }
+}
+
+.animate-color {
+  animation: colorChange 5s infinite;
+}
+
+.loading-icon {
+  font-size: 2rem;
+  filter: drop-shadow(0 0 10px rgba(var(--primary-rgb), 0.3));
+}
+
+.loading-icon.animate-color {
+  animation: colorChange 5s infinite, pulse 2s infinite;
+}
+
+/* Service Card Hover Effects */
+.service-card {
+  position: relative;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transform: perspective(1000px);
+}
+
+.service-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    45deg,
+    transparent 0%,
+    rgba(var(--primary-rgb), 0.1) 100%
+  );
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.service-card:hover::before {
+  opacity: 1;
+}
+
+.service-card .service-icon {
+  transition: all 0.3s ease;
+  transform: translateZ(20px);
+}
+
+.service-card:hover .service-icon {
+  transform: translateZ(30px) scale(1.1);
+  color: var(--primary-color);
+}
+
+.service-card .service-title {
+  transition: all 0.3s ease;
+  transform: translateZ(15px);
+}
+
+.service-card:hover .service-title {
+  transform: translateZ(25px);
+  color: var(--primary-color);
+}
+
+.service-card .service-description {
+  transition: all 0.3s ease;
+  transform: translateZ(10px);
+}
+
+.service-card:hover .service-description {
+  transform: translateZ(20px);
+  opacity: 0.9;
+}

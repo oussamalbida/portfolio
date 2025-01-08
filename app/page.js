@@ -302,21 +302,21 @@ const navLinks = [
 const testimonials = [
   {
     name: "Sarah Johnson",
-    position: "Product Manager",
-    text: "Working with Oussama was an exceptional experience. His attention to detail and innovative solutions helped bring our vision to life. The end result exceeded our expectations.",
-    image: "/client1.jpg"
+    position: "CEO, TechStart",
+    text: "Working with Oussama was a game-changer for our startup. His technical expertise and attention to detail transformed our vision into reality.",
+    image: "/testimonials/testimonial1.svg"
   },
   {
     name: "Michael Chen",
-    position: "Tech Lead",
-    text: "Oussama's technical expertise and problem-solving skills are outstanding. He delivered our project on time and with excellent quality. A true professional who goes above and beyond.",
-    image: "/client2.jpg"
+    position: "CTO, InnovateLab",
+    text: "Oussama's full-stack expertise and problem-solving abilities made our complex project seem effortless. Highly recommended!",
+    image: "/testimonials/testimonial2.svg"
   },
   {
-    name: "Emma Davis",
-    position: "Startup Founder",
-    text: "I'm impressed by Oussama's ability to transform complex requirements into elegant solutions. His work has significantly improved our user experience and business metrics.",
-    image: "/client3.jpg"
+    name: "Emily Martinez",
+    position: "Product Manager, DesignPro",
+    text: "The UI/UX expertise and attention to detail brought by Oussama elevated our product to a whole new level. Outstanding work!",
+    image: "/testimonials/testimonial3.svg"
   }
 ];
 
@@ -587,7 +587,7 @@ export default function Home() {
                     x: 0,
                     transition: {
                       duration: 0.8,
-                      ease: "easeOut"
+                      ease: [0.6, -0.05, 0.01, 0.99]
                     }
                   }
                 }}
@@ -605,7 +605,7 @@ export default function Home() {
                     x: 0,
                     transition: {
                       duration: 0.8,
-                      ease: "easeOut"
+                      ease: [0.6, -0.05, 0.01, 0.99]
                     }
                   }
                 }}
@@ -1288,7 +1288,7 @@ export default function Home() {
         </section>
 
         {/* Services Section */}
-        <section className="min-h-screen py-20 px-[30px] bg-[var(--bg-color)]" id="portfolio">
+        <section className="min-h-screen py-20 px-[30px] bg-[var(--bg-color)] max-w-[1200px] ml-[152px]" id="portfolio">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -1309,15 +1309,15 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className={`bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
+                className={`service-card bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
                   isDarkMode ? '' : 'services-light-mode'
                 }`}
               >
-                <div className="text-[var(--primary-color)] text-3xl mb-4">
+                <div className="service-icon text-[var(--primary-color)] text-3xl mb-4">
                   <i className="fas fa-palette"></i>
                 </div>
-                <h3 className="text-white text-xl font-semibold mb-4">UI/UX Design</h3>
-                <p className="text-[#94A3B8]">
+                <h3 className="service-title text-white text-xl font-semibold mb-4">UI/UX Design</h3>
+                <p className="service-description text-[#94A3B8]">
                   Crafting intuitive and visually appealing user interfaces with a focus on user experience and modern design principles.
                 </p>
               </motion.div>
@@ -1327,15 +1327,15 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className={`bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
+                className={`service-card bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
                   isDarkMode ? '' : 'services-light-mode'
                 }`}
               >
-                <div className="text-[var(--primary-color)] text-3xl mb-4">
+                <div className="service-icon text-[var(--primary-color)] text-3xl mb-4">
                   <i className="fas fa-code"></i>
                 </div>
-                <h3 className="text-white text-xl font-semibold mb-4">Frontend Development</h3>
-                <p className="text-[#94A3B8]">
+                <h3 className="service-title text-white text-xl font-semibold mb-4">Frontend Development</h3>
+                <p className="service-description text-[#94A3B8]">
                   Building responsive web applications using React.js, Next.js, and Laravel, with a focus on performance and user interaction.
                 </p>
               </motion.div>
@@ -1345,16 +1345,16 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
-                className={`bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
+                className={`service-card bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
                   isDarkMode ? '' : 'services-light-mode'
                 }`}
               >
-                <div className="text-[var(--primary-color)] text-3xl mb-4">
+                <div className="service-icon text-[var(--primary-color)] text-3xl mb-4">
                   <i className="fas fa-server"></i>
                 </div>
-                <h3 className="text-white text-xl font-semibold mb-4">Backend Development</h3>
-                <p className="text-[#94A3B8]">
-                  Developing robust server-side solutions using Node.js, Laravel, and Next.js, ensuring scalable and secure applications.
+                <h3 className="service-title text-white text-xl font-semibold mb-4">Backend Development</h3>
+                <p className="service-description text-[#94A3B8]">
+                  Developing robust server-side solutions and APIs using Node.js and PHP, ensuring scalability and security.
                 </p>
               </motion.div>
 
@@ -1363,15 +1363,15 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.5 }}
-                className={`bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
+                className={`service-card bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
                   isDarkMode ? '' : 'services-light-mode'
                 }`}
               >
-                <div className="text-[var(--primary-color)] text-3xl mb-4">
+                <div className="service-icon text-[var(--primary-color)] text-3xl mb-4">
                   <i className="fas fa-database"></i>
                 </div>
-                <h3 className="text-white text-xl font-semibold mb-4">Database Management</h3>
-                <p className="text-[#94A3B8]">
+                <h3 className="service-title text-white text-xl font-semibold mb-4">Database Management</h3>
+                <p className="service-description text-[#94A3B8]">
                   Designing and managing both SQL (MySQL) and NoSQL (MongoDB) database design and optimization.
                 </p>
               </motion.div>
@@ -1381,15 +1381,15 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.6 }}
-                className={`bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
+                className={`service-card bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
                   isDarkMode ? '' : 'services-light-mode'
                 }`}
               >
-                <div className="text-[var(--primary-color)] text-3xl mb-4">
+                <div className="service-icon text-[var(--primary-color)] text-3xl mb-4">
                   <i className="fas fa-users"></i>
                 </div>
-                <h3 className="text-white text-xl font-semibold mb-4">Scrum & Team Work</h3>
-                <p className="text-[#94A3B8]">
+                <h3 className="service-title text-white text-xl font-semibold mb-4">Scrum & Team Work</h3>
+                <p className="service-description text-[#94A3B8]">
                   Experienced in Agile methodologies, facilitating efficient team collaboration and project management.
                 </p>
               </motion.div>
@@ -1399,15 +1399,15 @@ export default function Home() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.7 }}
-                className={`bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
+                className={`service-card bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
                   isDarkMode ? '' : 'services-light-mode'
                 }`}
               >
-                <div className="text-[var(--primary-color)] text-3xl mb-4">
+                <div className="service-icon text-[var(--primary-color)] text-3xl mb-4">
                   <i className="fas fa-comments"></i>
                 </div>
-                <h3 className="text-white text-xl font-semibold mb-4">Soft Skills</h3>
-                <p className="text-[#94A3B8]">
+                <h3 className="service-title text-white text-xl font-semibold mb-4">Soft Skills</h3>
+                <p className="service-description text-[#94A3B8]">
                   Strong communication, problem-solving abilities, and adaptability in diverse team environments.
                 </p>
               </motion.div>
