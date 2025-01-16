@@ -1319,6 +1319,7 @@ export default function Home() {
             >
               {/* Skill 1 - React */}
               <SkillBar 
+                key="react-skill"
                 skill="React"
                 percentage={90}
                 description="Expert in React.js, building dynamic and responsive user interfaces with modern features and best practices."
@@ -1326,6 +1327,7 @@ export default function Home() {
 
               {/* Skill 2 - Next.js */}
               <SkillBar 
+                key="next-skill"
                 skill="Next.js"
                 percentage={85}
                 description="Proficient in Next.js framework, creating optimized and SEO-friendly web applications."
@@ -1333,6 +1335,7 @@ export default function Home() {
 
               {/* Skill 3 - Node.js */}
               <SkillBar 
+                key="node-skill"
                 skill="Node.js"
                 percentage={85}
                 description="Strong backend development skills using Node.js and Express for scalable server-side solutions."
@@ -1340,6 +1343,7 @@ export default function Home() {
 
               {/* Skill 4 - Laravel */}
               <SkillBar 
+                key="laravel-skill"
                 skill="Laravel"
                 percentage={100}
                 description="Advanced expertise in Laravel framework for robust PHP-based web applications."
@@ -1347,6 +1351,7 @@ export default function Home() {
 
               {/* Skill 5 - MySQL/MongoDB */}
               <SkillBar 
+                key="database-skill"
                 skill="Database Management"
                 percentage={90}
                 description="Expert in both SQL (MySQL) and NoSQL (MongoDB) database design and optimization."
@@ -1354,6 +1359,7 @@ export default function Home() {
 
               {/* Skill 6 - UI/UX */}
               <SkillBar 
+                key="uiux-skill"
                 skill="UI/UX Design"
                 percentage={80}
                 description="Creating intuitive and aesthetically pleasing user interfaces with modern design principles."
@@ -1387,111 +1393,165 @@ export default function Home() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {/* UI/UX Design */}
-              <motion.div
+              <motion.div 
+                key="uiux-design"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.1 }}
                 viewport={{ once: true }}
-                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-                className="bg-[#0B1121] p-8 rounded-2xl border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300"
+                whileHover={{ 
+                  scale: 1.03,
+                  boxShadow: "0 20px 40px rgba(0, 255, 170, 0.1)",
+                  transition: { duration: 0.3 }
+                }}
+                className="bg-[#0B1121] rounded-2xl p-8 border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300 group cursor-pointer"
               >
-                <div className="text-[var(--primary-color)] text-4xl mb-6">
-                  <i className="fas fa-palette"></i>
+                <div className="w-12 h-12 bg-[var(--primary-color)] bg-opacity-10 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <motion.span 
+                    className="text-[var(--primary-color)] text-2xl"
+                    whileHover={{ rotate: 360 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    🎨
+                  </motion.span>
                 </div>
-                <h4 className="text-white text-2xl font-bold mb-4">UI/UX Design</h4>
-                <p className="text-[#8892b0] leading-relaxed">
-                  Crafting intuitive and visually appealing user interfaces with a focus on user experience and modern design principles.
-                </p>
+                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-[var(--primary-color)] transition-colors duration-300">UI/UX Design</h3>
+                <p className="text-[#8892b0] group-hover:text-white transition-colors duration-300">Crafting intuitive and visually appealing user interfaces with a focus on user experience and modern design principles.</p>
               </motion.div>
 
               {/* Frontend Development */}
-              <motion.div
+              <motion.div 
+                key="frontend-dev"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
                 viewport={{ once: true }}
-                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-                className="bg-[#0B1121] p-8 rounded-2xl border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300"
+                whileHover={{ 
+                  scale: 1.03,
+                  boxShadow: "0 20px 40px rgba(0, 255, 170, 0.1)",
+                  transition: { duration: 0.3 }
+                }}
+                className="bg-[#0B1121] rounded-2xl p-8 border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300 group cursor-pointer"
               >
-                <div className="text-[var(--primary-color)] text-4xl mb-6">
-                  <i className="fas fa-code"></i>
+                <div className="w-12 h-12 bg-[var(--primary-color)] bg-opacity-10 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <motion.span 
+                    className="text-[var(--primary-color)] text-2xl"
+                    whileHover={{ rotate: 360 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    💻
+                  </motion.span>
                 </div>
-                <h4 className="text-white text-2xl font-bold mb-4">Frontend Development</h4>
-                <p className="text-[#8892b0] leading-relaxed">
-                  Building responsive web applications using React.js, Next.js, and Laravel, with a focus on performance and user interaction.
-                </p>
+                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-[var(--primary-color)] transition-colors duration-300">Frontend Development</h3>
+                <p className="text-[#8892b0] group-hover:text-white transition-colors duration-300">Building responsive web applications using React.js, Next.js, and Laravel, with a focus on performance and user interaction.</p>
               </motion.div>
 
               {/* Backend Development */}
-              <motion.div
+              <motion.div 
+                key="backend-dev"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
                 viewport={{ once: true }}
-                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-                className="bg-[#0B1121] p-8 rounded-2xl border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300"
+                whileHover={{ 
+                  scale: 1.03,
+                  boxShadow: "0 20px 40px rgba(0, 255, 170, 0.1)",
+                  transition: { duration: 0.3 }
+                }}
+                className="bg-[#0B1121] rounded-2xl p-8 border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300 group cursor-pointer"
               >
-                <div className="text-[var(--primary-color)] text-4xl mb-6">
-                  <i className="fas fa-server"></i>
+                <div className="w-12 h-12 bg-[var(--primary-color)] bg-opacity-10 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <motion.span 
+                    className="text-[var(--primary-color)] text-2xl"
+                    whileHover={{ rotate: 360 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    ⚙️
+                  </motion.span>
                 </div>
-                <h4 className="text-white text-2xl font-bold mb-4">Backend Development</h4>
-                <p className="text-[#8892b0] leading-relaxed">
-                  Developing robust server-side solutions and APIs using Node.js and PHP, ensuring scalability and security.
-                </p>
+                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-[var(--primary-color)] transition-colors duration-300">Backend Development</h3>
+                <p className="text-[#8892b0] group-hover:text-white transition-colors duration-300">Developing robust server-side solutions and APIs using Node.js and PHP, ensuring scalability and security.</p>
               </motion.div>
 
               {/* Database Management */}
-              <motion.div
+              <motion.div 
+                key="database-management"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
                 viewport={{ once: true }}
-                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-                className="bg-[#0B1121] p-8 rounded-2xl border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300"
+                whileHover={{ 
+                  scale: 1.03,
+                  boxShadow: "0 20px 40px rgba(0, 255, 170, 0.1)",
+                  transition: { duration: 0.3 }
+                }}
+                className="bg-[#0B1121] rounded-2xl p-8 border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300 group cursor-pointer"
               >
-                <div className="text-[var(--primary-color)] text-4xl mb-6">
-                  <i className="fas fa-database"></i>
+                <div className="w-12 h-12 bg-[var(--primary-color)] bg-opacity-10 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <motion.span 
+                    className="text-[var(--primary-color)] text-2xl"
+                    whileHover={{ rotate: 360 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    🗄️
+                  </motion.span>
                 </div>
-                <h4 className="text-white text-2xl font-bold mb-4">Database Management</h4>
-                <p className="text-[#8892b0] leading-relaxed">
-                  Designing and managing both SQL (MySQL) and NoSQL (MongoDB) database design and optimization.
-                </p>
+                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-[var(--primary-color)] transition-colors duration-300">Database Management</h3>
+                <p className="text-[#8892b0] group-hover:text-white transition-colors duration-300">Designing and managing both SQL (MySQL) and NoSQL (MongoDB) database design and optimization.</p>
               </motion.div>
 
               {/* Scrum & Team Work */}
-              <motion.div
+              <motion.div 
+                key="scrum-teamwork"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.5 }}
                 viewport={{ once: true }}
-                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-                className="bg-[#0B1121] p-8 rounded-2xl border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300"
+                whileHover={{ 
+                  scale: 1.03,
+                  boxShadow: "0 20px 40px rgba(0, 255, 170, 0.1)",
+                  transition: { duration: 0.3 }
+                }}
+                className="bg-[#0B1121] rounded-2xl p-8 border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300 group cursor-pointer"
               >
-                <div className="text-[var(--primary-color)] text-4xl mb-6">
-                  <i className="fas fa-users"></i>
+                <div className="w-12 h-12 bg-[var(--primary-color)] bg-opacity-10 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <motion.span 
+                    className="text-[var(--primary-color)] text-2xl"
+                    whileHover={{ rotate: 360 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    👥
+                  </motion.span>
                 </div>
-                <h4 className="text-white text-2xl font-bold mb-4">Scrum & Team Work</h4>
-                <p className="text-[#8892b0] leading-relaxed">
-                  Experienced in Agile methodologies, facilitating efficient team collaboration and project management.
-                </p>
+                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-[var(--primary-color)] transition-colors duration-300">Scrum & Team Work</h3>
+                <p className="text-[#8892b0] group-hover:text-white transition-colors duration-300">Experienced in Agile methodologies, facilitating efficient team collaboration and project management.</p>
               </motion.div>
 
               {/* Soft Skills */}
-              <motion.div
+              <motion.div 
+                key="soft-skills"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.6 }}
                 viewport={{ once: true }}
-                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-                className="bg-[#0B1121] p-8 rounded-2xl border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300"
+                whileHover={{ 
+                  scale: 1.03,
+                  boxShadow: "0 20px 40px rgba(0, 255, 170, 0.1)",
+                  transition: { duration: 0.3 }
+                }}
+                className="bg-[#0B1121] rounded-2xl p-8 border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300 group cursor-pointer"
               >
-                <div className="text-[var(--primary-color)] text-4xl mb-6">
-                  <i className="fas fa-comments"></i>
+                <div className="w-12 h-12 bg-[var(--primary-color)] bg-opacity-10 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <motion.span 
+                    className="text-[var(--primary-color)] text-2xl"
+                    whileHover={{ rotate: 360 }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    💭
+                  </motion.span>
                 </div>
-                <h4 className="text-white text-2xl font-bold mb-4">Soft Skills</h4>
-                <p className="text-[#8892b0] leading-relaxed">
-                  Strong communication, problem-solving abilities, and adaptability in diverse team environments.
-                </p>
+                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-[var(--primary-color)] transition-colors duration-300">Soft Skills</h3>
+                <p className="text-[#8892b0] group-hover:text-white transition-colors duration-300">Strong communication, problem-solving abilities, and adaptability in diverse team environments.</p>
               </motion.div>
             </div>
           </div>
@@ -1776,7 +1836,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="text-4xl font-bold text-white"
+              className="text-white text-4xl font-bold"
             >
               What Clients Say
             </motion.h2>
