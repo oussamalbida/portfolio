@@ -331,6 +331,12 @@ export default function Home() {
     message: ''
   });
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       const sections = navLinks.map(link => document.getElementById(link.id));
@@ -428,7 +434,7 @@ export default function Home() {
             </motion.div>
 
             <motion.div 
-              className="hidden md:flex items-center space-x-8"
+              className="hidden lg:flex items-center space-x-8"
               initial={{ x: 50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.4 }}
@@ -454,6 +460,75 @@ export default function Home() {
             </motion.div>
           </div>
         </motion.nav>
+
+        {/* Mobile Navigation */}
+        <div className="lg:hidden">
+          <button
+            onClick={toggleMenu}
+            className="fixed top-4 right-4 z-50 p-2 rounded-lg bg-[var(--background-color)] shadow-lg"
+            aria-label="Toggle Menu"
+          >
+            <motion.div
+              animate={isMenuOpen ? "open" : "closed"}
+              className="w-6 h-5 flex flex-col justify-between"
+            >
+              <motion.span
+                variants={{
+                  closed: { rotate: 0, y: 0 },
+                  open: { rotate: 45, y: 8 },
+                }}
+                className="w-full h-0.5 bg-[var(--text-color)] block"
+              ></motion.span>
+              <motion.span
+                variants={{
+                  closed: { opacity: 1 },
+                  open: { opacity: 0 },
+                }}
+                className="w-full h-0.5 bg-[var(--text-color)] block"
+              ></motion.span>
+              <motion.span
+                variants={{
+                  closed: { rotate: 0, y: 0 },
+                  open: { rotate: -45, y: -8 },
+                }}
+                className="w-full h-0.5 bg-[var(--text-color)] block"
+              ></motion.span>
+            </motion.div>
+          </button>
+
+          <AnimatePresence>
+            {isMenuOpen && (
+              <motion.div
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ type: "tween", duration: 0.3 }}
+                className="fixed top-0 right-0 w-full h-screen bg-[var(--background-color)] z-40 shadow-xl"
+              >
+                <div className="flex flex-col items-center justify-center h-full space-y-8 p-4">
+                  {navLinks.map((link) => (
+                    <motion.a
+                      key={link.id}
+                      href={link.href}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        toggleMenu();
+                        smoothScrollTo(link.id);
+                      }}
+                      className="text-xl font-semibold text-[var(--text-color)] hover:text-[var(--primary-color)] transition-colors"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 20 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {link.name}
+                    </motion.a>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
         {/* Hero Section */}
         <section className="min-h-screen flex items-center px-[30px]" id="home">
@@ -1226,7 +1301,7 @@ export default function Home() {
 
             {/* Skills Grid */}
             <motion.div 
-              className={`max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 ${
+              className={`max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-4 sm:px-6 lg:px-8 ${
                 isDarkMode ? '' : 'services-light-mode'
               }`}
               variants={{
@@ -1288,323 +1363,392 @@ export default function Home() {
         </section>
 
         {/* Services Section */}
-        <section className="min-h-screen py-20 px-[30px] bg-[var(--bg-color)] max-w-[1200px] ml-[152px]" id="portfolio">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="container mx-auto"
-          >
-            {/* Section Title */}
-            <div className="text-center mb-12">
-              <h3 className="text-[var(--primary-color)] text-xl font-semibold mb-4">SERVICES</h3>
-              <h2 className="text-[var(--text-color)] text-4xl font-bold">What I do for you</h2>
-            </div>
+        <section className="py-20 relative bg-[var(--background-color)]" id="services">
+          <div className="max-w-[1200px] mx-auto px-[30px]">
+            <motion.h2
+              initial={{ opacity: 0, y: -20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+              className="text-center text-[var(--primary-color)] font-semibold text-lg mb-2"
+            >
+              SERVICES
+            </motion.h2>
 
-            {/* Services Grid */}
+            <motion.h3
+              initial={{ opacity: 0, y: -20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="text-center text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-16"
+            >
+              What I do for you
+            </motion.h3>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {/* Service 1 - UI/UX Design */}
+              {/* UI/UX Design */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className={`service-card bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
-                  isDarkMode ? '' : 'services-light-mode'
-                }`}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+                className="bg-[#0B1121] p-8 rounded-2xl border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300"
               >
-                <div className="service-icon text-[var(--primary-color)] text-3xl mb-4">
+                <div className="text-[var(--primary-color)] text-4xl mb-6">
                   <i className="fas fa-palette"></i>
                 </div>
-                <h3 className="service-title text-white text-xl font-semibold mb-4">UI/UX Design</h3>
-                <p className="service-description text-[#94A3B8]">
+                <h4 className="text-white text-2xl font-bold mb-4">UI/UX Design</h4>
+                <p className="text-[#8892b0] leading-relaxed">
                   Crafting intuitive and visually appealing user interfaces with a focus on user experience and modern design principles.
                 </p>
               </motion.div>
 
-              {/* Service 2 - Frontend Development */}
+              {/* Frontend Development */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                className={`service-card bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
-                  isDarkMode ? '' : 'services-light-mode'
-                }`}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+                className="bg-[#0B1121] p-8 rounded-2xl border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300"
               >
-                <div className="service-icon text-[var(--primary-color)] text-3xl mb-4">
+                <div className="text-[var(--primary-color)] text-4xl mb-6">
                   <i className="fas fa-code"></i>
                 </div>
-                <h3 className="service-title text-white text-xl font-semibold mb-4">Frontend Development</h3>
-                <p className="service-description text-[#94A3B8]">
+                <h4 className="text-white text-2xl font-bold mb-4">Frontend Development</h4>
+                <p className="text-[#8892b0] leading-relaxed">
                   Building responsive web applications using React.js, Next.js, and Laravel, with a focus on performance and user interaction.
                 </p>
               </motion.div>
 
-              {/* Service 3 - Backend Development */}
+              {/* Backend Development */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-                className={`service-card bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
-                  isDarkMode ? '' : 'services-light-mode'
-                }`}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+                className="bg-[#0B1121] p-8 rounded-2xl border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300"
               >
-                <div className="service-icon text-[var(--primary-color)] text-3xl mb-4">
+                <div className="text-[var(--primary-color)] text-4xl mb-6">
                   <i className="fas fa-server"></i>
                 </div>
-                <h3 className="service-title text-white text-xl font-semibold mb-4">Backend Development</h3>
-                <p className="service-description text-[#94A3B8]">
+                <h4 className="text-white text-2xl font-bold mb-4">Backend Development</h4>
+                <p className="text-[#8892b0] leading-relaxed">
                   Developing robust server-side solutions and APIs using Node.js and PHP, ensuring scalability and security.
                 </p>
               </motion.div>
 
-              {/* Service 4 - Database Management */}
+              {/* Database Management */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-                className={`service-card bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
-                  isDarkMode ? '' : 'services-light-mode'
-                }`}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+                className="bg-[#0B1121] p-8 rounded-2xl border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300"
               >
-                <div className="service-icon text-[var(--primary-color)] text-3xl mb-4">
+                <div className="text-[var(--primary-color)] text-4xl mb-6">
                   <i className="fas fa-database"></i>
                 </div>
-                <h3 className="service-title text-white text-xl font-semibold mb-4">Database Management</h3>
-                <p className="service-description text-[#94A3B8]">
+                <h4 className="text-white text-2xl font-bold mb-4">Database Management</h4>
+                <p className="text-[#8892b0] leading-relaxed">
                   Designing and managing both SQL (MySQL) and NoSQL (MongoDB) database design and optimization.
                 </p>
               </motion.div>
 
-              {/* Service 5 - Scrum & Team Work */}
+              {/* Scrum & Team Work */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.6 }}
-                className={`service-card bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
-                  isDarkMode ? '' : 'services-light-mode'
-                }`}
+                transition={{ duration: 0.5, delay: 0.5 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+                className="bg-[#0B1121] p-8 rounded-2xl border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300"
               >
-                <div className="service-icon text-[var(--primary-color)] text-3xl mb-4">
+                <div className="text-[var(--primary-color)] text-4xl mb-6">
                   <i className="fas fa-users"></i>
                 </div>
-                <h3 className="service-title text-white text-xl font-semibold mb-4">Scrum & Team Work</h3>
-                <p className="service-description text-[#94A3B8]">
+                <h4 className="text-white text-2xl font-bold mb-4">Scrum & Team Work</h4>
+                <p className="text-[#8892b0] leading-relaxed">
                   Experienced in Agile methodologies, facilitating efficient team collaboration and project management.
                 </p>
               </motion.div>
 
-              {/* Service 6 - Soft Skills */}
+              {/* Soft Skills */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.7 }}
-                className={`service-card bg-[#0B1121] p-8 rounded-2xl border transition-all duration-300 ${
-                  isDarkMode ? '' : 'services-light-mode'
-                }`}
+                transition={{ duration: 0.5, delay: 0.6 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+                className="bg-[#0B1121] p-8 rounded-2xl border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300"
               >
-                <div className="service-icon text-[var(--primary-color)] text-3xl mb-4">
+                <div className="text-[var(--primary-color)] text-4xl mb-6">
                   <i className="fas fa-comments"></i>
                 </div>
-                <h3 className="service-title text-white text-xl font-semibold mb-4">Soft Skills</h3>
-                <p className="service-description text-[#94A3B8]">
+                <h4 className="text-white text-2xl font-bold mb-4">Soft Skills</h4>
+                <p className="text-[#8892b0] leading-relaxed">
                   Strong communication, problem-solving abilities, and adaptability in diverse team environments.
                 </p>
               </motion.div>
             </div>
-          </motion.div>
+          </div>
         </section>
 
         {/* Portfolio Section */}
-        <motion.section
-          id="portfolio"
-          className="py-20 max-w-[1200px] ml-[170px]"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <motion.h3 
-                className="text-[var(--primary-color)] text-xl font-semibold mb-4"
-                variants={{
-                  hidden: { opacity: 0, y: 10 },
-                  visible: { opacity: 1, y: 0 }
-                }}
-              >
-                MY WORK
-              </motion.h3>
-              <motion.h2 
-                className="text-[var(--text-color)] text-4xl font-bold"
-                variants={{
-                  hidden: { opacity: 0, scale: 0.8 },
-                  visible: { opacity: 1, scale: 1 }
-                }}
-              >
-                Recent Projects
-              </motion.h2>
-            </div>
+        <section className="py-20 bg-[var(--background-color)]" id="portfolio">
+          <div className="max-w-[1200px] mx-auto px-[30px]">
+            <motion.h2
+              initial={{ opacity: 0, y: -20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              viewport={{ once: true }}
+              className="text-center text-[var(--primary-color)] font-semibold text-lg mb-2"
+            >
+              MY WORK
+            </motion.h2>
+
+            <motion.h3
+              initial={{ opacity: 0, y: -20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="text-center text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-16"
+            >
+              Recent Projects
+            </motion.h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {/* Portfolio items */}
+              {/* Project 1 */}
               <motion.div
-                className="portfolio-card aspect-[4/3]"
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  visible: { opacity: 1, y: 0 }
-                }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+                className="bg-[#0B1121] rounded-2xl overflow-hidden border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300"
               >
-                <img 
-                  src="/pj1.png" 
-                  alt="Personal Portfolio" 
-                  className="portfolio-image"
-                />
-                <div className="portfolio-overlay">
-                  <h3 className="portfolio-title">Personal Portfolio</h3>
-                  <p className="portfolio-description">Modern portfolio with dark theme and dynamic animations</p>
-                  <a 
-                    href="https://oussamalbida.netlify.app/" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="mt-4 px-6 py-2 bg-[var(--primary-color)] text-white rounded-lg hover:bg-[var(--primary-hover)] transition-colors"
-                  >
-                    View Project
-                  </a>
+                <div className="relative overflow-hidden group">
+                  <img 
+                    src="/pj1.png" 
+                    alt="Personal Portfolio" 
+                    className="w-full h-64 object-cover object-center transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <a 
+                      href="https://oussamalbida.netlify.app/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="px-6 py-2 bg-[var(--primary-color)] text-white rounded-full transform -translate-y-10 group-hover:translate-y-0 transition-transform duration-300"
+                    >
+                      View Project
+                    </a>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <h4 className="text-white text-xl font-bold mb-2">Personal Portfolio</h4>
+                  <p className="text-[#8892b0] mb-4">Modern portfolio with dark theme and dynamic animations</p>
+                  <div className="flex gap-4">
+                    <span className="text-sm text-[var(--primary-color)]">#React.js</span>
+                    <span className="text-sm text-[var(--primary-color)]">#Bootstrap 5</span>
+                    <span className="text-sm text-[var(--primary-color)]">#Html/Css</span>
+                  </div>
                 </div>
               </motion.div>
 
+              {/* Project 2 */}
               <motion.div
-                className="portfolio-card aspect-[4/3]"
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  visible: { opacity: 1, y: 0 }
-                }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+                className="bg-[#0B1121] rounded-2xl overflow-hidden border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300"
               >
-                <img 
-                  src="/services agency.png" 
-                  alt="Digital Agency Website" 
-                  className="portfolio-image"
-                />
-                <div className="portfolio-overlay">
-                  <h3 className="portfolio-title">Digital Agency</h3>
-                  <p className="portfolio-description">Full-service digital agency website with modern UI/UX</p>
-                  <a 
-                    href="https://sevices-agency3.vercel.app/" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="mt-4 px-6 py-2 bg-[var(--primary-color)] text-white rounded-lg hover:bg-[var(--primary-hover)] transition-colors"
-                  >
-                    View Project
-                  </a>
+                <div className="relative overflow-hidden group">
+                  <img 
+                    src="/services agency.png" 
+                    alt="Digital Agency Website" 
+                    className="w-full h-64 object-cover object-center transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <a 
+                      href="https://sevices-agency3.vercel.app/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="px-6 py-2 bg-[var(--primary-color)] text-white rounded-full transform -translate-y-10 group-hover:translate-y-0 transition-transform duration-300"
+                    >
+                      View Project
+                    </a>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <h4 className="text-white text-xl font-bold mb-2">Digital Agency</h4>
+                  <p className="text-[#8892b0] mb-4">Full-service digital agency website with modern UI/UX</p>
+                  <div className="flex gap-4">
+                    <span className="text-sm text-[var(--primary-color)]">#Next.js</span>
+                    <span className="text-sm text-[var(--primary-color)]">#Tailwind Css</span>
+                    <span className="text-sm text-[var(--primary-color)]">#Html/Css</span>
+                    <span className="text-sm text-[var(--primary-color)]">#three.js</span>
+                  </div>
                 </div>
               </motion.div>
 
+              {/* Project 3 */}
               <motion.div
-                className="portfolio-card aspect-[4/3]"
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  visible: { opacity: 1, y: 0 }
-                }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+                className="bg-[#0B1121] rounded-2xl overflow-hidden border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300"
               >
-                <img 
-                  src="/pj3.png" 
-                  alt="Developer Portfolio" 
-                  className="portfolio-image"
-                />
-                <div className="portfolio-overlay">
-                  <h3 className="portfolio-title">Developer Portfolio</h3>
-                  <p className="portfolio-description">Elegant portfolio showcasing full-stack development skills</p>
-                  <a 
-                    href="https://ayoubetabit.netlify.app/" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="mt-4 px-6 py-2 bg-[var(--primary-color)] text-white rounded-lg hover:bg-[var(--primary-hover)] transition-colors"
-                  >
-                    View Project
-                  </a>
+                <div className="relative overflow-hidden group">
+                  <img 
+                    src="/pj3.png" 
+                    alt="Developer Portfolio" 
+                    className="w-full h-64 object-cover object-center transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <a 
+                      href="https://ayoubetabit.netlify.app/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="px-6 py-2 bg-[var(--primary-color)] text-white rounded-full transform -translate-y-10 group-hover:translate-y-0 transition-transform duration-300"
+                    >
+                      View Project
+                    </a>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <h4 className="text-white text-xl font-bold mb-2">Developer Portfolio</h4>
+                  <p className="text-[#8892b0] mb-4">Elegant portfolio showcasing full-stack development skills</p>
+                  <div className="flex gap-4">
+                    <span className="text-sm text-[var(--primary-color)]">#Next.js</span>
+                    <span className="text-sm text-[var(--primary-color)]">#Tailwind Css</span>
+                    <span className="text-sm text-[var(--primary-color)]">#Html/Css</span>
+                    <span className="text-sm text-[var(--primary-color)]">#Framer Motion</span>
+                  </div>
                 </div>
               </motion.div>
 
+              {/* Project 4 */}
               <motion.div
-                className="portfolio-card aspect-[4/3]"
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  visible: { opacity: 1, y: 0 }
-                }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+                className="bg-[#0B1121] rounded-2xl overflow-hidden border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300"
               >
-                <img 
-                  src="/ecommerce-dashboard.jpg" 
-                  alt="E-commerce Dashboard" 
-                  className="portfolio-image"
-                />
-                <div className="portfolio-overlay">
-                  <h3 className="portfolio-title">E-commerce Dashboard</h3>
-                  <p className="portfolio-description">Real-time analytics dashboard for e-commerce with advanced data visualization</p>
-                  <a 
-                    href="#" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="mt-4 px-6 py-2 bg-[var(--primary-color)] text-white rounded-lg hover:bg-[var(--primary-hover)] transition-colors"
-                  >
-                    View Project
-                  </a>
+                <div className="relative overflow-hidden group">
+                  <img 
+                    src="/pj5.png" 
+                    alt="E-commerce website" 
+                    className="w-full h-64 object-cover object-center transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <a 
+                      href="https://store-qlgh.vercel.app/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="px-6 py-2 bg-[var(--primary-color)] text-white rounded-full transform -translate-y-10 group-hover:translate-y-0 transition-transform duration-300"
+                    >
+                      View Project
+                    </a>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <h4 className="text-white text-xl font-bold mb-2">E-commerce Website</h4>
+                  <p className="text-[#8892b0] mb-4">Responsive e-commerce website with advanced data visualization</p>
+                  <div className="flex gap-4">
+                    <span className="text-sm text-[var(--primary-color)]">#Next.js</span>
+                    <span className="text-sm text-[var(--primary-color)]">#Tailwind Css</span>
+                    <span className="text-sm text-[var(--primary-color)]">#Html/Css</span>
+                  </div>
                 </div>
               </motion.div>
 
+              {/* Project 5 */}
               <motion.div
-                className="portfolio-card aspect-[4/3]"
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  visible: { opacity: 1, y: 0 }
-                }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+                className="bg-[#0B1121] rounded-2xl overflow-hidden border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300"
               >
-                <img 
-                  src="/ai-chatbot.jpg" 
-                  alt="AI Chatbot Interface" 
-                  className="portfolio-image"
-                />
-                <div className="portfolio-overlay">
-                  <h3 className="portfolio-title">AI Customer Support</h3>
-                  <p className="portfolio-description">Intelligent chatbot system with natural language processing capabilities</p>
-                  <a 
-                    href="#" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="mt-4 px-6 py-2 bg-[var(--primary-color)] text-white rounded-lg hover:bg-[var(--primary-hover)] transition-colors"
-                  >
-                    View Project
-                  </a>
+                <div className="relative overflow-hidden group">
+                  <img 
+                    src="/ai-chatbot.jpg" 
+                    alt="AI Chatbot Interface" 
+                    className="w-full h-64 object-cover object-center transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <a 
+                      href="#" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="px-6 py-2 bg-[var(--primary-color)] text-white rounded-full transform -translate-y-10 group-hover:translate-y-0 transition-transform duration-300"
+                    >
+                      View Project
+                    </a>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <h4 className="text-white text-xl font-bold mb-2">AI Customer Support</h4>
+                  <p className="text-[#8892b0] mb-4">Intelligent chatbot system with natural language processing capabilities</p>
+                  <div className="flex gap-4">
+                    <span className="text-sm text-[var(--primary-color)]">#Next.js</span>
+                    <span className="text-sm text-[var(--primary-color)]">#OpenAI</span>
+                    <span className="text-sm text-[var(--primary-color)]">#Tailwind Css</span>
+                  </div>
                 </div>
               </motion.div>
 
+              {/* Project 6 */}
               <motion.div
-                className="portfolio-card aspect-[4/3]"
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  visible: { opacity: 1, y: 0 }
-                }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
+                viewport={{ once: true }}
+                whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+                className="bg-[#0B1121] rounded-2xl overflow-hidden border border-[#1E2D3D] hover:border-[var(--primary-color)] transition-all duration-300"
               >
-                <img 
-                  src="/pj4.png" 
-                  alt="Menara Project" 
-                  className="portfolio-image"
-                />
-                <div className="portfolio-overlay">
-                  <h3 className="portfolio-title">Menara</h3>
-                  <p className="portfolio-description">Modern web application with sleek design and seamless user experience</p>
-                  <a 
-                    href="https://menara-kappa.vercel.app/" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="mt-4 px-6 py-2 bg-[var(--primary-color)] text-white rounded-lg hover:bg-[var(--primary-hover)] transition-colors"
-                  >
-                    View Project
-                  </a>
+                <div className="relative overflow-hidden group">
+                  <img 
+                    src="/pj4.png" 
+                    alt="Menara Project" 
+                    className="w-full h-64 object-cover object-center transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <a 
+                      href="https://menara-kappa.vercel.app/" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="px-6 py-2 bg-[var(--primary-color)] text-white rounded-full transform -translate-y-10 group-hover:translate-y-0 transition-transform duration-300"
+                    >
+                      View Project
+                    </a>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <h4 className="text-white text-xl font-bold mb-2">Menara</h4>
+                  <p className="text-[#8892b0] mb-4">Modern web application with sleek design and seamless user experience</p>
+                  <div className="flex gap-4">
+                    <span className="text-sm text-[var(--primary-color)]">#React.js</span>
+                    <span className="text-sm text-[var(--primary-color)]">#Nood.js</span>
+                    <span className="text-sm text-[var(--primary-color)]">#Express.js</span>
+                    <span className="text-sm text-[var(--primary-color)]">#LongoDB</span>
+
+                  </div>
                 </div>
               </motion.div>
             </div>
           </div>
-        </motion.section>
+        </section>
 
         {/* Testimonials Section */}
         <motion.section
