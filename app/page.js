@@ -532,7 +532,7 @@ export default function Home() {
 
         {/* Hero Section */}
         <section className="min-h-screen flex items-center px-[30px]" id="home">
-          <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-[120px] items-center">
             <motion.div 
               variants={staggerContainer}
               initial="hidden"
